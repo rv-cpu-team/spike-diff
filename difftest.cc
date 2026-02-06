@@ -4,9 +4,6 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
-//至今用到的csrs
-//
-
 enum csr_user{
   cycle = 0xc00, timer = 0xc01, instret = 0xc02
 };
@@ -29,7 +26,6 @@ enum csr_pmp{
     pmpaddr8 = 0x3b8, pmpaddr9 = 0x3b9, pmpaddr10 = 0x3ba, pmpaddr11 = 0x3bb,
     pmpaddr12 = 0x3bc, pmpaddr13 = 0x3bd, pmpaddr14 = 0x3be, pmpaddr15 = 0x3bf
 };
-
 #define NR_GPR 32
 #define NR_CSR 4096
 #define CONFIG_MSIZE 0x8000000
@@ -48,8 +44,6 @@ enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
   typedef int64_t sword_t;
   typedef uint64_t paddr_t;
 #endif
-
-
 static std::vector<std::pair<reg_t, abstract_device_t*>> difftest_plugin_devices;
 static std::vector<std::string> difftest_htif_args;
 static std::vector<std::pair<reg_t, mem_t*>> difftest_mem(
@@ -85,8 +79,6 @@ void sim_t::diff_step(uint64_t n) {
   step(n);
 }
 
-
-
 void sim_t::diff_get_regs(void* diff_context) {
   struct diff_context_t* dut = (struct diff_context_t*)diff_context;
   dut->pc = state->pc;
@@ -94,23 +86,23 @@ void sim_t::diff_get_regs(void* diff_context) {
     dut->gpr[i] = state->XPR[i];
   } 
   //Machine Mode Registers
-  dut->csr[mhartid]    = p->get_csr(mhartid); // 或者 state->get_csr(mhartid)
-  dut->csr[mstatus]    = p->get_csr(mstatus);
-  dut->csr[mepc]       = p->get_csr(mepc);
-  dut->csr[medeleg]    = p->get_csr(medeleg);
-  dut->csr[mideleg]    = p->get_csr(mideleg);
-  dut->csr[mie]        = p->get_csr(mie);
-  dut->csr[menvcfg]    = p->get_csr(menvcfg);
-  dut->csr[mcounteren] = p->get_csr(mcounteren);  
-  // Supervisor Mode Registers
-  dut->csr[satp]       = p->get_csr(satp);
-  dut->csr[sie]        = p->get_csr(sie);
-  dut->csr[stimecmp]   = p->get_csr(stimecmp);
-  // PMP Registers
-  dut->csr[pmpaddr0]   = p->get_csr(pmpaddr0);
-  dut->csr[pmpcfg0]    = p->get_csr(pmpcfg0);
-  //user 
-  dut->csr[timer]      = p->get_csr(timer);
+   dut->csr[mhartid]    = p->get_csr(mhartid); // 或者 state->get_csr(mhartid)
+   dut->csr[mstatus]    = p->get_csr(mstatus);
+   dut->csr[mepc]       = p->get_csr(mepc);
+   dut->csr[medeleg]    = p->get_csr(medeleg);
+   dut->csr[mideleg]    = p->get_csr(mideleg);
+   dut->csr[mie]        = p->get_csr(mie);
+   dut->csr[menvcfg]    = p->get_csr(menvcfg);
+   dut->csr[mcounteren] = p->get_csr(mcounteren);  
+    // // Supervisor Mode Registers
+   dut->csr[satp]       = p->get_csr(satp);
+   dut->csr[sie]        = p->get_csr(sie);
+    // PMP Registers
+   dut->csr[pmpaddr0]   = p->get_csr(pmpaddr0);
+   dut->csr[pmpcfg0]    = p->get_csr(pmpcfg0);
+
+  // dut->csr[stimecmp]   = p->get_csr(stimecmp);
+  // dut->csr[timer]      = p->get_csr(timer);
 }
 
 void sim_t::diff_set_regs(void* diff_context) {
@@ -120,27 +112,27 @@ void sim_t::diff_set_regs(void* diff_context) {
     state->XPR.write(i, (sword_t)dut->gpr[i]);
   }
     
-// // Machine Mode Registers
-//   p->put_csr(mhartid,    dut->csr[mhartid]);
-//   p->put_csr(mstatus,    dut->csr[mstatus]);
-//   p->put_csr(mepc,       dut->csr[mepc]);
-//   p->put_csr(medeleg,    dut->csr[medeleg]);
-//   p->put_csr(mideleg,    dut->csr[mideleg]);
-//   p->put_csr(mie,        dut->csr[mie]);
-//   p->put_csr(menvcfg,    dut->csr[menvcfg]);
-//   p->put_csr(mcounteren, dut->csr[mcounteren]);  
+  // // Machine Mode Registers
+  //   p->put_csr(mhartid,    dut->csr[mhartid]);
+  //   p->put_csr(mstatus,    dut->csr[mstatus]);
+  //   p->put_csr(mepc,       dut->csr[mepc]);
+  //   p->put_csr(medeleg,    dut->csr[medeleg]);
+  //   p->put_csr(mideleg,    dut->csr[mideleg]);
+  //   p->put_csr(mie,        dut->csr[mie]);
+  //   p->put_csr(menvcfg,    dut->csr[menvcfg]);
+  //   p->put_csr(mcounteren, dut->csr[mcounteren]);  
 
-//   // Supervisor Mode Registers
-//   p->put_csr(satp,       dut->csr[satp]);
-//   p->put_csr(sie,        dut->csr[sie]);
-//   p->put_csr(stimecmp,   dut->csr[stimecmp]);
+  //   // Supervisor Mode Registers
+  //   p->put_csr(satp,       dut->csr[satp]);
+  //   p->put_csr(sie,        dut->csr[sie]);
+  //   p->put_csr(stimecmp,   dut->csr[stimecmp]);
 
-//   // PMP Registers
-//   p->put_csr(pmpaddr0,   dut->csr[pmpaddr0]);
-//   p->put_csr(pmpcfg0,    dut->csr[pmpcfg0]);
+  //   // PMP Registers
+  //   p->put_csr(pmpaddr0,   dut->csr[pmpaddr0]);
+  //   p->put_csr(pmpcfg0,    dut->csr[pmpcfg0]);
 
-//   // User Mode Registers
-//   p->put_csr(timer,      dut->csr[timer]);
+  //   // User Mode Registers
+  //   p->put_csr(timer,      dut->csr[timer]);
 }
 
 void sim_t::diff_memcpy(reg_t dest, void* src, size_t n) {
@@ -175,7 +167,7 @@ __EXPORT void difftest_regcpy(void* dut, bool direction) {
     s->diff_set_regs(dut);
   } 
   //将spike的状态写入到处理器里面
-  else {
+  else if(direction == DIFFTEST_TO_DUT){
     s->diff_get_regs(dut);
   }
   
@@ -191,7 +183,10 @@ __EXPORT void difftest_init(int port) {
   const char *isa = "RV32IMAFC";
 #endif
 #ifdef RV64
-  const char *isa = "RV64IMAFC";
+//   const char *isa = "RV64G_sstc";    //have sstc，跑到这条指令，但是会出现段错误
+//  const char *isa = "RV64G";          //no   sstc，跑到这条指令，pc错误
+  const char *isa = "rv64g_zicsr";
+
 #endif
   cfg_t cfg(/*default_initrd_bounds=*/    std::make_pair((reg_t)0, (reg_t)0),
             /*default_bootargs=*/         nullptr,
