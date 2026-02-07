@@ -27,8 +27,9 @@ INC_PATH  = -I$(REPO_PATH) $(addprefix -I$(REPO_PATH)/, $(inc_dependencies))
 lib_dependencies = libspike_main.a libriscv.a libdisasm.a libsoftfloat.a libfesvr.a libfdt.a
 INC_LIBS  = $(addprefix $(REPO_PATH)/build/, $(lib_dependencies))
 
-NAME = riscv64-spike-so
-BINARY = $(BUILD_DIR)/$(NAME)
+NAME ?= 64
+BUILD_NAME = riscv$(NAME)-spike-so
+BINARY = $(BUILD_DIR)/$(BUILD_NAME)
 SRCS = difftest.cc
 
 $(BINARY): $(SPIKE) $(SRCS)
