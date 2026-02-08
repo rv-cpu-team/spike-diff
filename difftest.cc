@@ -73,8 +73,11 @@ void sim_t::diff_get_regs(void* diff_context) {
   // //Machine Mode Registers
   //  dut->csr[mhartid]    = p->get_csr(mhartid); // 或者 state->get_csr(mhartid)
   //  dut->csr[mstatus]    = p->get_csr(mstatus);
-  //  dut->csr[mepc]       = p->get_csr(mepc);
-  //  dut->csr[medeleg]    = p->get_csr(medeleg);
+   dut->csr[mepc]       = p->get_csr(mepc);
+   dut->csr[mstatus]    = p->get_csr(mstatus);
+   dut->csr[mtvec]      = p->get_csr(mtvec);
+   dut->csr[mcause]     = p->get_csr(mcause);
+   //  dut->csr[medeleg]    = p->get_csr(medeleg);
   //  dut->csr[mideleg]    = p->get_csr(mideleg);
   //  dut->csr[mie]        = p->get_csr(mie);
   //  dut->csr[menvcfg]    = p->get_csr(menvcfg);
@@ -93,12 +96,14 @@ void sim_t::diff_get_regs(void* diff_context) {
 void sim_t::diff_set_regs(void* diff_context) {
   struct diff_context_t* dut = (struct diff_context_t*)diff_context;
   state->pc = dut->pc;
-  // printf("spike-pc=%08lx, sizeof(state->pc)=%ld\n", state->pc, sizeof(state->pc));
-  // printf("dut-pc=%08x,    sizeof(dut->pc)=%ld\n"  , dut->pc, sizeof(dut->pc));
 
   for (int i = 0; i < NR_GPR; i++) {
     state->XPR.write(i, (sword_t)dut->gpr[i]);
   }
+  p->put_csr(CSR_MEPC,    dut->csr[mepc]);
+  p->put_csr(CSR_MSTATUS, dut->csr[mstatus]);
+  p->put_csr(CSR_MTVEC,   dut->csr[mtvec]);
+  p->put_csr(CSR_MCAUSE,  dut->csr[mcause]);
 }
 
 void sim_t::diff_memcpy(reg_t dest, void* src, size_t n) {
